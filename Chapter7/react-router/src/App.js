@@ -9,6 +9,7 @@ import {
   Navigate,
   useParams,
   useNavigate,
+  useMatch
 } from "react-router-dom"
 
 
@@ -19,9 +20,8 @@ const Home = () => (
   </div>
 )
 
-const Note = ({ notes }) => {
-  const id = useParams().id
-  const note = notes.find(n => n.id === Number(id))
+const Note = ({ note }) => {
+
   return (
     <div>
       <h2>{note.content}</h2>
@@ -31,7 +31,7 @@ const Note = ({ notes }) => {
   )
 }
 
-const Notes = ({notes}) => (
+const Notes = ({ notes }) => (
   <div>
     <h2>Notes</h2>
     <ul>
@@ -104,6 +104,13 @@ const App = () => {
 
   const [user, setUser] = useState(null) 
 
+  const match = useMatch('/notes/:id')
+
+  const note = match 
+    ? notes.find(note => note.id === Number(match.params.id))
+    : null
+
+
   const login = (user) => {
     setUser(user)
   }
@@ -114,7 +121,6 @@ const App = () => {
 
   return (
     <div>
-    <Router>
       <div>
         <Link style={padding} to="/">home</Link>
         <Link style={padding} to="/notes">notes</Link>
@@ -124,15 +130,13 @@ const App = () => {
           : <Link style={padding} to="/login">login</Link>
         }
       </div>
-
       <Routes>
-        <Route path="/notes/:id" element={<Note notes={notes} />} />  
+        <Route path="/notes/:id" element={<Note note={note} />} />  
         <Route path="/notes" element={<Notes notes={notes} />} />   
         <Route path="/users" element={user ? <Users /> : <Navigate replace to="/login" />} />
         <Route path="/login" element={<Login onLogin={login} />} />
         <Route path="/" element={<Home />} />      
-      </Routes>
-    </Router>      
+      </Routes>   
       <div>
         <br />
         <em>Note app, Department of Computer Science 2022</em>
